@@ -18,7 +18,7 @@ app.use(cors());
 //locations
 app.get('/location', (request, response) => {
   searchToLatLong(request.query.data)
-    .then(location => response.send(locationData))
+    .then(location => response.send(location))
     .catch(error => handleError(error, response));
 });
 
