@@ -51,9 +51,6 @@ function handleError(err, res) {
 
 //creates a new object with our geocode data
 function searchToLatLong(query) {
-  // const geoData = require('./data/geo.json');
-  // const location = new Location(query, geoData);
-  // return location;
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${query}&key=${process.env.GEOCODE_API_KEY}`;
   return superagent.get(url)
     .then(res => new Location(query, res))
@@ -62,9 +59,9 @@ function searchToLatLong(query) {
 
 function Location(query, res) {
   this.search_query = query;
-  this.formatted_query = res.results[0].formatted_address;
-  this.latitude = res.results[0].geometry.location.lat;
-  this.longitude = res.results[0].geometry.location.lng;
+  this.formatted_query = res.body.results[0].formatted_address;
+  this.latitude = res.body.results[0].geometry.location.lat;
+  this.longitude = res.body.results[0].geometry.location.lng;
 }
 
 // creates array of objects with our weather data
