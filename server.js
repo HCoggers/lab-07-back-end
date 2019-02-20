@@ -51,8 +51,8 @@ function handleError(err, res) {
 
 //creates a new object with our geocode data
 function searchToLatLong(query) {
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${query}&key=${process.env.GEOCODE_API_KEY}`;
-  return superagent.get(url)
+  const geoUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${query}&key=${process.env.GEOCODE_API_KEY}`;
+  return superagent.get(geoUrl)
     .then(res => new Location(query, res))
     .catch(error => handleError);
 }
@@ -66,8 +66,12 @@ function Location(query, res) {
 
 // creates array of objects with our weather data
 function getWeather(location) {
-  const darkskyData = require('./data/darksky.json');
-  return darkskyData.daily.data.map( day=> new Weather(day));
+  console.log(location);
+  const weatherUrl = `https://api.darksky.net/forecast/${process.env.DARKSKY_API_KEY}/${location.latitude},${location.longitude}`;
+  return superagent.get(weatherUrl)
+    .then(weatherData => {
+      return weatherData.daily.data.map(day => new Weather(day));
+    })
 }
 
 function Weather(day) {
