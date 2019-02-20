@@ -24,15 +24,16 @@ app.get('/location', (request, response) => {
 
 //weather
 app.get('/weather', (request, response) => {
-  const weatherData = getWeather(request.query.data);
-  response.send(weatherData);
+  getWeather(request.query.data)
+    .then(data => response.send(data))
+    .catch(error => handleError(error, response))
 })
 
 //meetups
-app.get('/meetups', (request, response) => {
-  const meetupData = getMeetups(request.query.data);
-  response.send(meetupData);
-})
+// app.get('/meetups', (request, response) => {
+//   const meetupData = getMeetups(request.query.data);
+//   response.send(meetupData);
+// })
 
 //catch-all error handler
 app.use('*', handleError);
@@ -45,7 +46,7 @@ app.listen(PORT, () => console.log(`App is up on ${PORT}`))
 
 // Err Handler
 function handleError(err, res) {
-  console.error(err);
+  //console.error(err);
   if (res) res.status(500).send('Sorry, something went terribly wrong. Toodles!');
 }
 
@@ -66,19 +67,20 @@ function Location(query, res) {
 
 // creates array of objects with our weather data
 function getWeather(location) {
-  console.log(location);
   const weatherUrl = `https://api.darksky.net/forecast/${process.env.DARKSKY_API_KEY}/${location.latitude},${location.longitude}`;
   return superagent.get(weatherUrl)
-    .then(weatherData => {
-      return weatherData.daily.data.map(day => new Weather(day));
+    .then(res => {
+      return res.body.daily.data.map(day => new Weather(day));
     })
+    .catch(error => handleError);
 }
 
 function Weather(day) {
   this.forecast = day.summary;
   this.time = new Date(day.time *1000).toString().slice(0,15);
 }
-// creates array of objects with our meetup data
+
+//creates array of objects with our meetup data
 function getMeetups(location) {
   const meetupData = require('api key');
   return 
