@@ -30,10 +30,11 @@ app.get('/weather', (request, response) => {
 })
 
 //meetups
-// app.get('/meetups', (request, response) => {
-//   const meetupData = getMeetups(request.query.data);
-//   response.send(meetupData);
-// })
+app.get('/meetups', (request, response) => {
+  getMeetups(request.query.data)
+    .then(data => response.send(data))
+    .catch(error => handleError(error, response))
+})
 
 //catch-all error handler
 app.use('*', handleError);
@@ -82,6 +83,21 @@ function Weather(day) {
 
 //creates array of objects with our meetup data
 function getMeetups(location) {
-  const meetupData = require('api key');
-  return 
+  let meetupsURL = `https://api.meetup.com/find/groups?&query=${location.search_query}&page=20&key=${process.env.MEETUPS_API_KEY}`;
+
+  return superagent.get(meetupsURL)
+    .then(res => {
+      console.log(res.body[0]);
+      return res.body.map(event => new Meetups(event))
+    })
+    .catch(error => handleError)
+
+
+}
+
+function Meetups(event){
+  this.name = event.name;
+  this.link = event.link;
+  this.creation_date = new Date(event.created *1000).toString().slice(0,15);
+  this.host = event.organizer.name;
 }
